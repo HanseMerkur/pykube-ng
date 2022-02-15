@@ -299,7 +299,7 @@ class KubernetesHTTPAdapter(requests.adapters.HTTPAdapter):
         return None
 
     def _setup_request_certificates(self, config, request, kwargs):
-        if self.cert and self.key:
+        if hasattr(self, "cert") and hasattr(self, "key"):
             kwargs["cert"] = \
             (
                 self.cert.name,
