@@ -1,0 +1,30 @@
+name: Deploy standalone pypi package
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Build 
+        run: |
+          pip install poetry==1.1.13
+          poetry build
+          mkdir -p pages/
+          mv dist pages/
+      - name: Create dumb PyPI repository
+        run: |
+          pip install dumb-pypi==1.8.0
+          dumb-pypi \
+            --package-list <(cd pages/dist; ls *.whl) \
+            --packages-url https://hansemerkur.github.io/pykube-ng/dist/ \
+            --output-dir pages/
+      - name: Upload gh-pages
+        uses: JamesIves/github-pages-deploy-action@v4.2.5
+        with:
+          branch: gh-pages
+          folder: pages
